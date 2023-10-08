@@ -9,6 +9,9 @@ class Model:
         self.train = train_set
         self.test = test_set
 
+        self.X_train = self.train[:, :-1]
+        self.y_train = self.train[:, -1]
+
     def train(self):
         pass
 
@@ -16,6 +19,9 @@ class Model:
         pass
 
     def predict(self):
+        pass
+
+    def relu(self):
         pass
 
     def export(self):
