@@ -1,5 +1,5 @@
 import numpy as np
-from model import Model
+from src.neural_network.model import Model
 from sklearn.model_selection import train_test_split as sk_split
 
 
@@ -18,11 +18,11 @@ class NeuralNetwork:
 
         self.model: Model = model if model is not None else Model(self.train, self.test)
 
-    def train(self):
-        self.model.train()
+    def train_nn(self):
+        self.model.train_model()
 
-    def test(self):
-        pass
+    def test_nn(self):
+        self.model.test_model()
 
-    def predict(self):
-        pass
+    def predict_nn(self, data: np.ndarray):
+        return self.model.predict_model(data)
