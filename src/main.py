@@ -65,7 +65,7 @@ class Main:
         :return:
         """
 
-        for i in range(self.data_normalized[1]):
+        for i in range(len(self.data_normalized[1])):
             with Image.open(self.path + self.data_normalized[1, i]) as img:
                 img.resize((224, 224), Image.ANTIALIAS)
 

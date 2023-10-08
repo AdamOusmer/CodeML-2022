@@ -19,7 +19,7 @@ class NeuralNetwork:
         self.model: Model = model if model is not None else Model(self.train, self.test)
 
     def train(self):
-        pass
+        self.model.train()
 
     def test(self):
         pass

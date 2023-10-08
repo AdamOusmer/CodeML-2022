@@ -1,6 +1,4 @@
 import numpy as np
-import torch
-from torch import nn
 
 
 class Model:
@@ -9,11 +7,15 @@ class Model:
         self.train = train_set
         self.test = test_set
 
-        self.X_train = self.train[:, :-1]
-        self.y_train = self.train[:, -1]
+        self.x_train = self.train[:, 0]
+        self.y_train = self.train[:, 1]
+
+        self.x_test = self.test[:, 0]
+        self.y_test = self.test[:, 1]
 
     def train(self):
-        pass
+        for i in range(len(self.x_train)):
+            pass
 
     def test(self):
         pass
