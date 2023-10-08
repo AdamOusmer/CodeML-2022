@@ -6,6 +6,8 @@ from torchvision import transforms
 import src.neural_network.neuralNetwork as nN
 from PIL import Image
 
+from tqdm import tqdm
+
 
 class Main:
     def __init__(self):
@@ -71,8 +73,6 @@ class Main:
 
                 img = img.convert("RGB")
 
-                img = transforms.RandomResizedCrop((224, 224))(img)
-                img = transforms.RandomHorizontalFlip()(img)
                 img = transforms.ToTensor()(img)
                 img = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(img)
 
@@ -89,39 +89,43 @@ class Main:
     def predict(self):
 
         self.data = pd.read_csv(self.path)
-        self.data = self.data.dropna(subset=['label'], how='any')
 
-        self.data = self.data.fillna(0, inplace=True)
+        self.data_normalized = self.data.fillna(0)
+
+        self.data_normalized = self.data_normalized[self.data_normalized['label'] == 0]
+        self.data_normalized = self.data_normalized.drop('ID', axis=1)
 
         self.preprocess()
 
-        for i in range(len(self.data_normalized.iloc[:, 1])):
+        for i in tqdm(range(len(self.data_normalized.iloc[:, 0]))):
 
-            value = self.neural_network.predict_nn(self.data_normalized.iloc[i, 1])
+            value = self.neural_network.predict_nn(self.data_normalized.iloc[i, 0])
 
             match value:
                 case 0:
-                    self.data_normalized.iloc[i, 2] = "angry"
+                    self.data_normalized.iloc[i, 1] = "angry"
                 case 1:
-                    self.data_normalized.iloc[i, 2] = "disgusted"
+                    self.data_normalized.iloc[i, 1] = "disgusted"
                 case 2:
-                    self.data_normalized.iloc[i, 2] = "fearful"
+                    self.data_normalized.iloc[i, 1] = "fearful"
                 case 3:
-                    self.data_normalized.iloc[i, 2] = "happy"
+                    self.data_normalized.iloc[i, 1] = "happy"
                 case 4:
-                    self.data_normalized.iloc[i, 2] = "neutral"
+                    self.data_normalized.iloc[i, 1] = "neutral"
                 case 5:
-                    self.data_normalized.iloc[i, 2] = "sad"
+                    self.data_normalized.iloc[i, 1] = "sad"
                 case 6:
-                    self.data_normalized.iloc[i, 2] = "surprised"
+                    self.data_normalized.iloc[i, 1] = "surprised"
 
     def export_data(self):
 
         self.data = pd.read_csv(self.path)
 
-        self.data = self.data.dropna()
+        self.data = self.data.fillna(0)
 
-        self.data = self.data.concat(self.data_normalized)
+        self.data = self.data[self.data['label'] == 0]
+
+        self.data['label'] = self.data_normalized['label']
 
         self.data.to_csv("../data_participant_predicted.csv")
 
@@ -130,6 +134,7 @@ class Main:
         self.neural_network = nN.NeuralNetwork(dataset=self.data_numpy)
         self.train()
         self.predict()
+        self.export_data()
 
 
 if __name__ == "__main__":

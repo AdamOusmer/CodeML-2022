@@ -12,7 +12,7 @@ class NeuralNetwork:
 
         if dataset is not None:
             self.dataset = dataset
-            self.train, self.test = sk_split(dataset, test_size=self.test_size)
+            self.train, self.test = sk_split(dataset, test_size=self.test_size, shuffle=True)
         else:
             raise ValueError("Dataset is None")
 

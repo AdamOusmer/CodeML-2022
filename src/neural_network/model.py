@@ -2,34 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 from torchvision import models
-
-
-class DynamicNeuralNetwork(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(DynamicNeuralNetwork, self).__init__()
-        self.layer1 = nn.Linear(input_size, hidden_size)
-        self.layer2 = nn.Linear(hidden_size, output_size)
-        self.layer3 = nn.Linear(hidden_size, output_size)
-        self.layer4 = nn.Linear(hidden_size, output_size)
-        self.layer5 = nn.Linear(hidden_size, output_size)
-        self.layer6 = nn.Linear(hidden_size, output_size)
-        self.layer7 = nn.Linear(hidden_size, output_size)
-        self.layer8 = nn.Linear(hidden_size, output_size)
-        self.layer9 = nn.Linear(hidden_size, output_size)
-        self.layer10 = nn.Linear(hidden_size, output_size)
-
-    def forward(self, x):
-        out = torch.relu(self.layer1(x))
-        out = torch.relu(self.layer2(out))
-        out = torch.relu(self.layer3(out))
-        out = torch.relu(self.layer4(out))
-        out = torch.relu(self.layer5(out))
-        out = torch.relu(self.layer6(out))
-        out = torch.relu(self.layer7(out))
-        out = torch.relu(self.layer8(out))
-        out = torch.relu(self.layer9(out))
-        out = self.layer10(out)
-        return out
+from tqdm import tqdm
 
 
 class Model:
@@ -48,7 +21,7 @@ class Model:
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        self.model = models.resnet18(weights=None)
+        self.model = models.resnet34(weights=None)
 
         num_ftrs = self.model.fc.in_features
         # Here the size of each output sample is set to 2.
@@ -61,11 +34,10 @@ class Model:
         self.criterion = nn.CrossEntropyLoss()  # Changed the loss function
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.01)
 
-    def train_model(self, num_epochs=1):
-        for epoch in range(num_epochs):
+    def train_model(self, num_epochs=35):
+        for epoch in tqdm(range(num_epochs)):
             for i in range(len(self.x_train)):
-                inputs = torch.from_numpy(self.x_train[i]).float().unsqueeze(
-                    0)  # Convert to tensor and add batch dimension
+                inputs = torch.from_numpy(self.x_train[i]).float().unsqueeze(0)
                 label = int(self.y_train[i])  # Convert label to integer
 
                 # Forward pass
@@ -77,7 +49,7 @@ class Model:
                 loss.backward()
                 self.optimizer.step()
 
-                if (epoch + 1) % 2 == 0:
+                if (epoch + 1) % 20 == 0:
                     print(
                         f'Epoch [{epoch + 1}/{num_epochs}], Sample {i + 1}/{len(self.x_train)}, Loss: {loss.item():.4f}')
 
@@ -91,5 +63,5 @@ class Model:
         print(f'Test Loss: {loss.item():.4f}')
 
     def predict_model(self, input_data):
-        input_data = torch.from_numpy(input_data).float()
-        return torch.argmax(self.model(input_data)).item()  # Return the predicted class
+        input_data = torch.from_numpy(input_data).float().unsqueeze(0)
+        return torch.argmax(self.model(input_data)).item()
